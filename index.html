@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>阅后即焚</title>
+</head>
+<body>
+  <h1>创建阅后即焚消息</h1>
+  <form id="createForm">
+    <label for="message">消息内容：</label><br>
+    <textarea id="message" name="message" rows="4" cols="50" required></textarea><br>
+    <label for="password">访问密码（可选）：</label><br>
+    <input type="password" id="password" name="password"><br><br>
+    <button type="submit">创建链接</button>
+  </form>
+  <div id="result"></div>
+  <script>
+    document.getElementById('createForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const response = await fetch('/create', {
+        method: 'POST',
+        body: JSON.stringify({
+          message: formData.get('message'),
+          password: formData.get('password')
+        }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById('result').innerHTML = '<p>您的链接已创建： <a href="' + data.link + '" target="_blank">' + data.link + '</a></p>';
+      } else {
+        document.getElementById('result').innerHTML = '<p>创建失败。</p>';
+      }
+    });
+  </script>
+</body>
+</html>
