@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阅后即焚</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>阅后即焚</h1>
+
+        <div id="create-view">
+            <h2>创建新的焚毁消息</h2>
+            <textarea id="message-input" placeholder="在此输入你的秘密消息..."></textarea>
+            <input type="password" id="password-input" placeholder="设置访问密码 (可选)">
+            <button id="create-button">创建链接</button>
+            <div id="generated-link-container" style="display:none;">
+                <p>分享链接已生成 (点击一次后失效):</p>
+                <input type="text" id="generated-link" readonly>
+                <button id="copy-link-button">复制链接</button>
+            </div>
+        </div>
+
+        <div id="read-view" style="display:none;">
+            <h2>查看消息</h2>
+            <div id="password-prompt" style="display:none;">
+                <input type="password" id="read-password-input" placeholder="请输入访问密码">
+                <button id="submit-password-button">提交密码</button>
+            </div>
+            <div id="message-display" style="display:none;">
+                <p>消息内容:</p>
+                <pre id="message-content"></pre>
+                <p class="warning">此消息已被查看，并将很快销毁。</p>
+            </div>
+            <div id="message-status"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
