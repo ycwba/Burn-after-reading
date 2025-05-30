@@ -1,18 +1,22 @@
+/**
+ * 注意：部署前请在Cloudflare仪表盘中绑定KV命名空间，命名为"MESSAGES"。
+ */
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const id = url.pathname.split('/').pop(); // Get the id from the path
     const dataStr = await env.MESSAGES.get(id);
-    if (!dataStr) {
-      return new Response('Not found', { status: 404 });
-    }
-    let data = JSON.parse(dataStr);
-    if (data.accessed) {
-      await env.MESSAGES.delete(id);
-      return new Response('Message already accessed or expired', { status: 403 });
-    }
-    if (request.method === 'GET') {
-      const html = `
+    try {
+      if (!dataStr) {
+        return new Response('Not found', { status: 404 });
+      }
+      let data = JSON.parse(dataStr);
+      if (data.accessed) {
+        await env.MESSAGES.delete(id);
+        return new Response('Message already accessed or expired', { status: 403 });
+      }
+      if (request.method === 'GET') {
+        const html = `
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -26,24 +30,30 @@ export default {
   </form>
 </body>
 </html>
-      `;
-      return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html' } });
-    } else if (request.method === 'POST') {
-      const formData = await request.formData();
-      const providedPassword = formData.get('password');
-      if (data.hashedPassword) {
-        const hashedProvided = await hashPassword(providedPassword);
-        if (hashedProvided !== data.hashedPassword) {
-          return new Response('Incorrect password', { status: 403 });
+        `;
+        return new Response(html, { status: 200, headers: { 'Content-Type': 'text/html' } });
+      } else if (request.method === 'POST') {
+        const formData = await request.formData();
+        const providedPassword = formData.get('password');
+        if (data.hashedPassword) {
+          const hashedProvided = await hashPassword(providedPassword);
+          if (hashedProvided !== data.hashedPassword) {
+            return new Response('Incorrect password', { status: 403 });
+          }
         }
+        // Access granted, show message and mark as accessed
+        data.accessed = true;
+        await env.MESSAGES.put(id, JSON.stringify(data));
+        await env.MESSAGES.delete(id); // Delete after access
+        return new Response(data.message, { status: 200 });
+      } else {
+        return new Response('Method not allowed', { status: 405 });
       }
-      // Access granted, show message and mark as accessed
-      data.accessed = true;
-      await env.MESSAGES.put(id, JSON.stringify(data));
-      await env.MESSAGES.delete(id); // Delete after access
-      return new Response(data.message, { status: 200 });
-    } else {
-      return new Response('Method not allowed', { status: 405 });
+    } catch (error) {
+      if (error.message.includes('KV namespace not found')) {
+        return new Response(JSON.stringify({ error: 'KV命名空间未找到，请在Cloudflare仪表盘中绑定"MESSAGES"命名空间' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+      }
+      return new Response(JSON.stringify({ error: '服务器错误：' + error.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
   }
 };
