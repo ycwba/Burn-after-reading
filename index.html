@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阅后即焚</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>阅后即焚消息</h1>
+        <textarea id="messageInput" placeholder="在这里输入你的秘密消息..."></textarea>
+        <button id="generateLinkBtn">生成阅后即焚链接</button>
+        <div id="linkOutput" class="hidden">
+            <p>分享这个链接：</p>
+            <input type="text" id="secretLink" readonly>
+            <button id="copyLinkBtn">复制链接</button>
+        </div>
+        <div id="messageDisplay" class="hidden">
+            <p>你的秘密消息：</p>
+            <div id="secretMessageContent"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
