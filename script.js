@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageStatus = document.getElementById('message-status');
 
     // Cloudflare Worker 端点 URL (稍后替换为实际 URL)
-    const WORKER_URL = 'https://messgae.ycwba.com'; // 占位符
+    const WORKER_URL = 'https://burn-after-reading-api.zhangruikang365.workers.dev'; // 占位符
 
     // 检查 URL hash 以确定是创建还是读取
     const hash = window.location.hash.substring(1);
